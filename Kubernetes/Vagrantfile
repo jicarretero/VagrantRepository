@@ -1,0 +1,40 @@
+Vagrant.configure("2") do |config|
+
+  config.vm.define "master" do |master|
+      master.vm.box = "ubuntu/bionic64"
+      master.vm.network "private_network", ip: "192.168.50.10", nic_type: "virtio"
+      master.vm.hostname = "master"
+      master.vm.network "forwarded_port", guest: 6443, host: 6443
+      master.vm.network "forwarded_port", guest: 8080, host: 8080
+      master.vm.provider :virtualbox do |vb|
+          vb.name = "master"
+          vb.customize ["modifyvm", :id, "--nictype1", "virtio"]
+      end
+      master.vm.provision :shell, path:"bootstrap.sh"
+      $enable_serial_logging = false
+  end
+
+  config.vm.define "slave1" do |slave1|
+      slave1.vm.box = "ubuntu/bionic64"
+      slave1.vm.network "private_network", ip: "192.168.50.11", nic_type: "virtio"
+      slave1.vm.hostname = "slave1"
+      slave1.vm.provider :virtualbox do |vb|
+          vb.name = "slave1"
+          vb.customize ["modifyvm", :id, "--nictype1", "virtio"]
+      end
+      slave1.vm.provision :shell, path:"bootstrap.sh"
+      $enable_serial_logging = false
+  end
+
+  config.vm.define "slave2" do |slave2|
+      slave2.vm.box = "ubuntu/bionic64"
+      slave2.vm.network "private_network", ip: "192.168.50.12", nic_type: "virtio"
+      slave2.vm.hostname = "slave2"
+      slave2.vm.provider :virtualbox do |vb|
+          vb.name = "slave2"
+          vb.customize ["modifyvm", :id, "--nictype1", "virtio"]
+      end
+      slave2.vm.provision :shell, path:"bootstrap.sh"
+      $enable_serial_logging = false
+  end
+end

@@ -1,0 +1,65 @@
+IOTAGENT_IP=$(oc get services  | awk '/^iotagent-json / {print $2}')
+export IOTAGENT_IP
+
+for a in {0001..3000}; do
+curl -X POST \
+  http://${IOTAGENT_IP}:4041/iot/services \
+  -H 'cache-control: no-cache' \
+  -H 'content-type: application/json' \
+  -H "fiware-service: service${a}" \
+  -H "fiware-servicepath: /service${a}" \
+  -d "{
+    \"services\": [
+        {
+          \"apikey\":      \"1234\",
+          \"cbroker\":     \"http://orion:1026\",
+          \"entity_type\": \"thing\",
+          \"resource\":    \"/iot/data${a}\"
+        }
+    ]
+}"
+done
+
+for a in {0001..3000}; do
+curl http://${IOTAGENT_IP}:4041/iot/services \
+       -H "cache-control: no-cache" \
+       -H "content-type: application/json" \
+       -H "fiware-service: service${a}" \
+       -H "fiware-servicepath: /service${a}"
+echo
+done
+
+for a in {0001..3000}; do
+curl -X POST \
+  http://${IOTAGENT_IP}:4041/iot/devices \
+  -H 'cache-control: no-cache' \
+  -H 'content-type: application/json' \
+  -H "fiware-service: service${a}" \
+  -H "fiware-servicepath: /service${a}" \
+  -d "{
+    \"devices\": [
+        {
+            \"device_id\": \"device${a}\",
+            \"entity_name\": \"device${a}\",
+            \"entity_type\": \"thing\",
+            \"attributes\": [
+                  {\"object_id\": \"t\", \"name\": \"temperature\", \"type\": \"Float\"},
+                  {\"object_id\": \"l\", \"name\": \"latitude\", \"type\": \"Integer\"}
+            ]
+        }
+    ]
+}"
+done
+
+# for a in {0001..3000}; do
+# curl -X GET \
+#   http://${IOTAGENT_IP}:4041/iot/devices \
+#   -H 'cache-control: no-cache' \
+#   -H 'content-type: application/json' \
+#   -H "fiware-service: service${a}" \
+#  -H "fiware-servicepath: /service${a}"
+# 
+# echo
+# echo
+# 
+# done

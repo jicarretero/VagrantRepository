@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    run: orion
+  name: orion
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      run: orion
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        run: orion
+    spec:
+      containers:
+      - image: fiware/orion:latest
+        name: orion
+        args:
+          - -dbhost
+          - mongo
+        ports:
+        - containerPort: 1026
+        resources: {}
+status: {}
